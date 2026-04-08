@@ -60,7 +60,7 @@ public class Main implements ApplicationListener {
         music.setLooping(true);
         music.setVolume(0.1f);
         music.play();
-        player = new Player(naveTexture, 3.5f, 0.5f, 1, 1, viewport);
+        player = new Player(naveTexture, 1f, 3f, 1, 1, viewport);
 
         score = 0;
         gameTime = 0;
@@ -98,9 +98,9 @@ public class Main implements ApplicationListener {
 
         bgOffset1 += 1f * dt;
 
-        float h = viewport.getWorldHeight();
+        float w = viewport.getWorldWidth();
 
-        if (bgOffset1 > h) bgOffset1 = 0;
+        if (bgOffset1 > w) bgOffset1 = 0;
 
         updateGameObjects(dt);
         handleCollisions();
@@ -108,9 +108,7 @@ public class Main implements ApplicationListener {
         drawUI();
     }
     private void updateGameObjects(float dt) {
-
         player.update(dt);
-        
     }
 
     private void handleCollisions() {
@@ -126,8 +124,8 @@ public class Main implements ApplicationListener {
 
         spriteBatch.begin();
 
-        spriteBatch.draw(backgroundTexture, 0, -bgOffset1, w, h);
-        spriteBatch.draw(backgroundTexture, 0, -bgOffset1 + h, w, h);
+        spriteBatch.draw(backgroundTexture,  -bgOffset1,0, w, h);
+        spriteBatch.draw(backgroundTexture,  -bgOffset1 + w,0, w, h);
         
         player.draw(spriteBatch);
         
