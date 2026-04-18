@@ -19,21 +19,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class Main implements ApplicationListener {
     Texture naveTexture;
     Texture backgroundTexture;
-    Texture meteoroTexture;
-    Texture laserTexture;
     SpriteBatch spriteBatch;
     FitViewport viewport;
-    Array<GameObject> meteoroSprites;
-    Array<GameObject> laserSprites;
-    float meteoroTimer;
-    float powerTime;
-    boolean naveViva = true;
-    Sound laserSound;
-    Sound explosionSound;
     Music music;
     Player player;
-    Texture powerTexture;
-    GameObject powerSprite;
     private int score;
     private float gameTime;
     
@@ -47,8 +36,6 @@ public class Main implements ApplicationListener {
     float bgOffset1 = 0;
     
     //private float gameTime;
-
-
 
     @Override
     public void create() {
