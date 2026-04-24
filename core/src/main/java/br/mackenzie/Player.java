@@ -18,6 +18,7 @@ public class Player extends GameObject {
     private float gravidade = -20f; 
     private float stateTime = 0f;
     Animation<TextureRegion> animation;
+    public float chaoHeight;
     
     
     public Player(Texture texture, float x, float y, float width, float height, Viewport viewport) {
@@ -25,9 +26,9 @@ public class Player extends GameObject {
         this.viewport = viewport;
         TextureRegion[] frames = TextureRegion.split(texture, 288, 300)[0];
         animation = new Animation<>(0.1f, frames);
-        margemx = width * 0.1f; 
-        margemy = height * 0.4f;
-        bounds = new Rectangle(x+margemx, y+margemy, width*margemy*2, height*margemx*2);
+        super.margemx = width * 0.2f; 
+        super.margemy = height * 0.45f;
+        bounds = new Rectangle(x+margemx, y+margemy, width-(margemx*2), height-(margemy*2));
     }
 
 
@@ -35,8 +36,7 @@ public class Player extends GameObject {
     public void update(float dt) {
         float worldHeight = viewport.getWorldHeight();
         // Aplica gravidade (aceleração)
-        velocidadeY += gravidade * dt;
-
+        velocidadeY += gravidade * dt; 
         stateTime += dt;
 
         // Move o player
@@ -49,17 +49,17 @@ public class Player extends GameObject {
         }
 
         // Clamp tela
-        y = MathUtils.clamp(y, 0 - margemy, worldHeight - margemy- bounds.height);
+        y = MathUtils.clamp(y, chaoHeight - margemy, worldHeight - margemy- bounds.height);
 
 
         super.currentFrame = animation.getKeyFrame(stateTime, true);
     }
 
     public void pulo() {
-        this.velocidadeY = 7f;
+        this.velocidadeY = 6f;
     }
 
     public void draw(SpriteBatch batch) {
         batch.draw(currentFrame, x, y, width, height);
     }
-}
+} 

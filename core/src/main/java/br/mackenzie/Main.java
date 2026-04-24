@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -21,26 +20,33 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main implements ApplicationListener {
     Texture playerTexture;
-    Texture backgroundTexture;
+    Texture arvoresTexture;
     SpriteBatch spriteBatch;
     FitViewport viewport;
     Music music;
     Player player;
     Texture torreTexture;
+    Texture chaoTexture;
+    Texture nuvensTexture;
+    Texture montanhaTexture;
+    Texture ceuTexture;
     private int score;
     private float gameTime;
     Array<Torre> torres;
     private float spawnTime;
+    float bgOffset2 = 0;
     
     // NOVIDADE: Elementos de UI
     private Stage uiStage;
     private Label scoreLabel;
     private Label timeLabel;
-    private Label lifesLabel;
     private BitmapFont font;
     ShapeRenderer shapeRenderer;
 
+
     float bgOffset1 = 0;
+    float bgOffset3 = 0;
+    float bgOffset4 = 0;
     
     //private float gameTime;
 
@@ -49,13 +55,21 @@ public class Main implements ApplicationListener {
         playerTexture = new Texture("passaro.png");
         spriteBatch = new SpriteBatch();
         viewport = new FitViewport(8, 5);
-        backgroundTexture = new Texture("background.png");
         music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+
+        arvoresTexture = new Texture("arvores.png");
+        nuvensTexture = new Texture("nuvens.png");
+        montanhaTexture = new Texture("montanhas.png");
+        ceuTexture = new Texture("ceu.png");
+
         torreTexture = new Texture("torre.png");
+        chaoTexture = new Texture("chao.png");
+
         music.setLooping(true);
         music.setVolume(0.1f);
         music.play();
         player = new Player(playerTexture, 1f, 3f, 1, 1, viewport);
+        player.chaoHeight = chaoTexture.getHeight() / 600f;
         shapeRenderer = new ShapeRenderer();
         torres = new Array<>();
 
@@ -71,13 +85,9 @@ public class Main implements ApplicationListener {
 
         timeLabel = new Label("Time: 0", style);
         timeLabel.setPosition(10, Gdx.graphics.getHeight() - 60);   
-
-        lifesLabel = new Label("Lifes: " + player.vida, style);
-        lifesLabel.setPosition(10, Gdx.graphics.getHeight() - 90);   
         
         uiStage.addActor(scoreLabel);
         uiStage.addActor(timeLabel);
-        uiStage.addActor(lifesLabel);
         
         // Prepare your application here.
     }
@@ -95,14 +105,20 @@ public class Main implements ApplicationListener {
         gameTime += dt;
         spawnTime += dt;
 
-        bgOffset1 += 1f * dt;
+        bgOffset1 += 0.5f * dt; //arvores
+        bgOffset2 += 2f * dt; //chao
+        bgOffset3 += 0.2f * dt; //nuvens
+        bgOffset4 += 0.3f * dt; //montanhas
 
         float w = viewport.getWorldWidth();
 
-        if (bgOffset1 > w) bgOffset1 = 0;
+        if (bgOffset1 > w) bgOffset1 = 0; //arvores
+        if (bgOffset2 > w) bgOffset2 = 0; //chao
+        if (bgOffset3 > w) bgOffset3 = 0; //nuvens
+        if (bgOffset4 > w) bgOffset4 = 0; //montanhas
 
         if (spawnTime > 2f) {
-            torres.add(new Torre(torreTexture, viewport.getWorldWidth(), 0, 1, 2, viewport));
+            torres.add(new Torre(torreTexture, viewport.getWorldWidth(), -2, (float)torreTexture.getWidth()/350, (float)torreTexture.getHeight()/350, viewport));
             spawnTime = 0;
         }
 
@@ -119,7 +135,19 @@ public class Main implements ApplicationListener {
     }
 
     private void handleCollisions() {
-        
+        for (Torre torre : torres) {
+            if (player.getBounds().overlaps(torre.getBounds()) || player.getBounds().overlaps(torre.torre2.getBounds())) {
+                if (player.vida <= 0) {
+                    System.out.println("Game Over!");
+                    //Gdx.app.exit();
+                }
+            }
+            else if (torre.x+torre.width/2 < player.x+player.width/2 && !torre.passed) {
+                score++;
+                scoreLabel.setText("Score: " + score);
+                torre.passed = true;
+            }
+        }
     }
 
     private void drawGameObjects() {
@@ -131,13 +159,25 @@ public class Main implements ApplicationListener {
 
         spriteBatch.begin();
 
-        spriteBatch.draw(backgroundTexture,  -bgOffset1,0, w, h);
-        spriteBatch.draw(backgroundTexture,  -bgOffset1 + w,0, w, h);
+        spriteBatch.draw(ceuTexture,0,0f, w, h);
+
         
+        spriteBatch.draw(nuvensTexture,  -bgOffset3,0.2f, w, h);
+        spriteBatch.draw(nuvensTexture,  -bgOffset3 + w,0.2f, w, h);
+        
+        spriteBatch.draw(montanhaTexture,  -bgOffset4,0f, w, h);
+        spriteBatch.draw(montanhaTexture,  -bgOffset4 + w,0f, w, h);
+        
+        spriteBatch.draw(arvoresTexture,  -bgOffset1,0, w, h);
+        spriteBatch.draw(arvoresTexture,  -bgOffset1 + w,0, w, h);
+
         for (Torre torre : torres) {
             torre.draw(spriteBatch);
         }
 
+        spriteBatch.draw(chaoTexture,  -bgOffset2,-0.5f, w, (float)chaoTexture.getHeight()/300);
+        spriteBatch.draw(chaoTexture,  -bgOffset2 + w,-0.5f, w, (float)chaoTexture.getHeight()/300);
+        
         player.draw(spriteBatch);
         
         spriteBatch.end();
@@ -146,22 +186,25 @@ public class Main implements ApplicationListener {
 
         //hitboxes
 
-        shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
+        // shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        shapeRenderer.setColor(0, 1, 0, 1);
+        // shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        // shapeRenderer.setColor(0, 1, 0, 1);
 
-        Rectangle b = player.getBounds();
-        shapeRenderer.rect(b.x, b.y, b.width, b.height);
+        // Rectangle b = player.getBounds();
+        // shapeRenderer.rect(b.x, b.y, b.width, b.height);
 
-        for (Torre torre : torres) {
-            shapeRenderer.rect(torre.x, torre.y, torre.width, torre.height);
-            shapeRenderer.rect(torre.torre2.x, torre.torre2.y, torre.torre2.width, torre.torre2.height);
-        }
+
+        // for (Torre torre : torres) {
+        //     Rectangle c = torre.getBounds();
+        //     shapeRenderer.rect(c.x, c.y, c.width, c.height);
+        //     Rectangle d = torre.torre2.getBounds();
+        //     shapeRenderer.rect(d.x, d.y, d.width, d.height);
+        // }
         
-        shapeRenderer.end();
+        // shapeRenderer.end();
         
-        
+
     }
 
 
@@ -185,7 +228,10 @@ public class Main implements ApplicationListener {
     public void dispose() {
         spriteBatch.dispose();
         playerTexture.dispose();
-        backgroundTexture.dispose();
+        arvoresTexture.dispose();
+        nuvensTexture.dispose();
+        montanhaTexture.dispose();
+        chaoTexture.dispose();
         music.dispose();
         font.dispose(); 
         uiStage.dispose(); 

@@ -3,6 +3,7 @@ package br.mackenzie;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 
 //Esta classe representa o balde. Ela herda de GameObject e implementa a lógica de movimento do jogador, lendo as entradas do teclado ou toque.
 public class Torre2 extends GameObject {
@@ -11,6 +12,7 @@ public class Torre2 extends GameObject {
 
     public Torre2(Texture texture, float x, float y, float width, float height, Viewport viewport) {
         super(texture, x, y, width, height);
+        bounds = new Rectangle(x+margemx, y+margemy, width-(margemy*2), height-(margemx*2));
     }
 
 

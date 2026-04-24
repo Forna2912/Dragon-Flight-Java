@@ -19,6 +19,9 @@ public abstract class GameObject {
         this.y = y;
         this.width = width;
         this.height = height;
+        this.margemx = 0;
+        this.margemy = 0;
+        
     }
 
     public abstract void update(float dt);
