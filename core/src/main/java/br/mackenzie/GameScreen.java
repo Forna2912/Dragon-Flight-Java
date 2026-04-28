@@ -23,7 +23,7 @@ public class GameScreen implements Screen {
     
     public GameScreen(Main game) {
         this.game = game;
-        this.viewport = game.viewport;
+        this.viewport = game.gameViewport;
     }
 
     private Main game;
@@ -121,9 +121,10 @@ public class GameScreen implements Screen {
 
     private void handleCollisions() {
         for (Torre torre : torres) {
-            if (player.getBounds().overlaps(torre.getBounds()) || player.getBounds().overlaps(torre.torre2.getBounds())) {
+            if ((player.getBounds().overlaps(torre.getBounds()) || player.getBounds().overlaps(torre.torre2.getBounds())) && !torre.passed) {
                 if (player.vida <= 0) {
                     System.out.println("Game Over!");
+                    torre.passed = true;
                     //Gdx.app.exit();
                 }
             }

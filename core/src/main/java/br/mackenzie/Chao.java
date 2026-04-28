@@ -16,7 +16,7 @@ public class Chao {
 
     public Chao(Main game) {
         this.game = game;
-        this.viewport = game.viewport;
+        this.viewport = game.gameViewport;
         w = viewport.getWorldWidth();
         chaoTexture = new Texture("chao.png");
 

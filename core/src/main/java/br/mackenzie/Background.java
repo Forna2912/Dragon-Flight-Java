@@ -7,7 +7,7 @@ public class Background {
 
     public Background(Main game) {
         this.game = game;
-        this.viewport = game.viewport;
+        this.viewport = game.gameViewport;
         w = viewport.getWorldWidth();
         h = viewport.getWorldHeight();
         arvoresTexture = new Texture("arvores.png");
