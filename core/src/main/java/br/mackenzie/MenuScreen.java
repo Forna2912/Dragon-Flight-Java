@@ -17,9 +17,12 @@ public class MenuScreen implements Screen {
     private Stage uiStage;
     Texture playButtonTexture;
     Texture pressedPlayButtonTexture;
+    Texture sairButtonTexture;
+    Texture pressedSairButtonTexture;
     float margemBotoesX = 1f;
     float margemBotoesY = 1f;
     Table botoes;
+
 
     public MenuScreen(Main game) {
         this.game = game;
@@ -59,11 +62,16 @@ public class MenuScreen implements Screen {
 
         Gdx.input.setInputProcessor(uiStage);
 
-        playButtonTexture = game.manager.get("assets/botao_play.png", Texture.class);
-        pressedPlayButtonTexture = game.manager.get("assets/botao_play_pressionado.png", Texture.class);
+        playButtonTexture = game.manager.get("botao_play.png", Texture.class);
+        pressedPlayButtonTexture = game.manager.get("botao_play_pressionado.png", Texture.class);
+        sairButtonTexture = game.manager.get("botao_sair.png", Texture.class);
+        pressedSairButtonTexture = game.manager.get("botao_sair_pressionado.png", Texture.class);
 
-        new Botao(game, botoes, new TextureRegion(playButtonTexture), new TextureRegion(pressedPlayButtonTexture), 75, 75);
-        new Botao(game, botoes, new TextureRegion(playButtonTexture), new TextureRegion(pressedPlayButtonTexture), 75, 75);
+        Botao botao_play = new Botao(new TextureRegion(playButtonTexture), new TextureRegion(pressedPlayButtonTexture), () -> game.setScreen(new GameScreen(game)));
+        botoes.add(botao_play).pad(10);
+
+        Botao botao_sair = new Botao(new TextureRegion(sairButtonTexture), new TextureRegion(pressedSairButtonTexture), () -> Gdx.app.exit());
+        botoes.add(botao_sair).pad(10);
 
     }
 

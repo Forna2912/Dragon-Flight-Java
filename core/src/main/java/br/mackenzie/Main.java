@@ -20,8 +20,10 @@ public class Main extends Game {
     public void create() {
         manager = new AssetManager();
 
-        manager.load("assets/botao_play.png", Texture.class);
-        manager.load("assets/botao_play_pressionado.png", Texture.class);
+        manager.load("botao_play.png", Texture.class);
+        manager.load("botao_play_pressionado.png", Texture.class);
+        manager.load("botao_sair.png", Texture.class);
+        manager.load("botao_sair_pressionado.png", Texture.class);
 
         manager.finishLoading();
 
