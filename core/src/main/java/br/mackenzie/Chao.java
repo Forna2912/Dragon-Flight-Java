@@ -35,5 +35,4 @@ public class Chao {
         game.batch.draw(chaoTexture,  -bgOffset2 + w,-0.5f, w, (float)chaoTexture.getHeight()/300);
 
     }
-
 }

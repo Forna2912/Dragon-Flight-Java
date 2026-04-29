@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -19,8 +20,6 @@ public class MenuScreen implements Screen {
     Texture pressedPlayButtonTexture;
     Texture sairButtonTexture;
     Texture pressedSairButtonTexture;
-    float margemBotoesX = 1f;
-    float margemBotoesY = 1f;
     Table botoes;
 
 
@@ -66,18 +65,24 @@ public class MenuScreen implements Screen {
         pressedPlayButtonTexture = game.manager.get("botao_play_pressionado.png", Texture.class);
         sairButtonTexture = game.manager.get("botao_sair.png", Texture.class);
         pressedSairButtonTexture = game.manager.get("botao_sair_pressionado.png", Texture.class);
-
+        
         Botao botao_play = new Botao(new TextureRegion(playButtonTexture), new TextureRegion(pressedPlayButtonTexture), () -> game.setScreen(new GameScreen(game)));
-        botoes.add(botao_play).pad(10);
-
         Botao botao_sair = new Botao(new TextureRegion(sairButtonTexture), new TextureRegion(pressedSairButtonTexture), () -> Gdx.app.exit());
-        botoes.add(botao_sair).pad(10);
+        
+        float largura = Value.percentWidth(0.3f, botoes).get();
+        System.out.println(largura);
+        float proporcao = botao_play.getPrefHeight() / botao_play.getPrefWidth();
+        float altura = largura * proporcao;
+        
+        botoes.add(botao_play).width(largura).height(altura).pad(10);
+        botoes.add(botao_sair).width(largura).height(altura).pad(10);
 
     }
 
     @Override public void resize(int width, int height) {
         UIViewport.update(width, height, true);
         gameViewport.update(width, height, true);
+        botoes.invalidateHierarchy();
     }
 
     @Override public void pause() {}
@@ -87,6 +92,5 @@ public class MenuScreen implements Screen {
     }
     @Override public void dispose() {
         uiStage.dispose();
-        game.manager.dispose();
     }
 }
