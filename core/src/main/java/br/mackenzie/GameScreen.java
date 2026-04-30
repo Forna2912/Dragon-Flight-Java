@@ -1,8 +1,6 @@
 package br.mackenzie;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -11,11 +9,11 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
@@ -24,11 +22,12 @@ public class GameScreen implements Screen {
     public GameScreen(Main game) {
         this.game = game;
         this.viewport = game.gameViewport;
+        this.UIViewport = game.UIViewport;
     }
 
     private Main game;
     FitViewport viewport;
-    Music music;
+    FitViewport UIViewport;
     Player player;
     
     Texture playerTexture;
@@ -37,6 +36,8 @@ public class GameScreen implements Screen {
     Texture nuvensTexture;
     Texture montanhaTexture;
     Texture ceuTexture;
+
+    Table InfoTable;
 
     private int score;
     private float gameTime;
@@ -50,19 +51,17 @@ public class GameScreen implements Screen {
     private BitmapFont font;
     ShapeRenderer shapeRenderer;
 
+    boolean mostrarHitboxes = false;
+
     float bgOffset2;
 
     @Override
     public void show() {
 
         playerTexture = new Texture("passaro.png");
-        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
 
         torreTexture = new Texture("torre.png");
 
-        music.setLooping(true);
-        music.setVolume(0.1f);
-        music.play();
         player = new Player(playerTexture, 1f, 3f, 1, 1, viewport);
         player.chaoHeight = game.chao.chaoTexture.getHeight() / 600f;
         shapeRenderer = new ShapeRenderer();
@@ -71,18 +70,27 @@ public class GameScreen implements Screen {
         score = 0;
         gameTime = 0;
         spawnTime = 0;
-        uiStage = new Stage();
-        font = new BitmapFont();
-        Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE);
+        uiStage = new Stage(UIViewport);
+        font = game.manager.get("fonte.fnt", BitmapFont.class);
+        float escala = 0.3f;
+        font.getData().setScale(escala);
+        Label.LabelStyle style = new Label.LabelStyle(font, Color.valueOf("383837"));
+
+        InfoTable = new Table();
+        InfoTable.setFillParent(true);
+        InfoTable.top().padTop(10).padLeft(10).left();
         
         scoreLabel = new Label("Score: " + score, style);
-        scoreLabel.setPosition(10, Gdx.graphics.getHeight() - 30);
-
         timeLabel = new Label("Time: 0", style);
-        timeLabel.setPosition(10, Gdx.graphics.getHeight() - 60);   
+
+        //InfoTable.setDebug(true);
         
-        uiStage.addActor(scoreLabel);
-        uiStage.addActor(timeLabel);
+        uiStage.addActor(InfoTable);
+
+        InfoTable.add(scoreLabel).left().row();
+        InfoTable.add(timeLabel).left();
+
+        //System.out.println("oi");
         
         // Prepare your application here.
     }
@@ -91,6 +99,7 @@ public class GameScreen implements Screen {
     public void resize(int width, int height) {
         viewport.update(width, height, true); // true centers the camera
         uiStage.getViewport().update(width, height, true);
+        UIViewport.update(width, height, true);
     }
 
     @Override
@@ -98,7 +107,6 @@ public class GameScreen implements Screen {
         // Draw your application here.
         gameTime += dt;
         spawnTime += dt;
-
         
         if (spawnTime > 2f) {
             torres.add(new Torre(torreTexture, viewport.getWorldWidth(),Math.round(MathUtils.random(-2f, 0f) * 100f) / 100f , (float)torreTexture.getWidth()/350, (float)torreTexture.getHeight()/350, viewport));
@@ -125,7 +133,6 @@ public class GameScreen implements Screen {
                 if (player.vida <= 0) {
                     System.out.println("Game Over!");
                     torre.passed = true;
-                    //Gdx.app.exit();
                 }
             }
             else if (torre.x+torre.width/2 < player.x+player.width/2 && !torre.passed) {
@@ -138,6 +145,7 @@ public class GameScreen implements Screen {
 
     private void drawGameObjects() {
         ScreenUtils.clear(Color.BLACK);
+        UIViewport.apply();
         viewport.apply();
         game.batch.setProjectionMatrix(viewport.getCamera().combined);
 
@@ -157,25 +165,26 @@ public class GameScreen implements Screen {
 
 
 
-        //hitboxes
+        if (mostrarHitboxes) {
+            shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
+    
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+            shapeRenderer.setColor(0, 1, 0, 1);
+    
+            Rectangle b = player.getBounds();
+            shapeRenderer.rect(b.x, b.y, b.width, b.height);
+    
+    
+            for (Torre torre : torres) {
+                Rectangle c = torre.getBounds();
+                shapeRenderer.rect(c.x, c.y, c.width, c.height);
+                Rectangle d = torre.torre2.getBounds();
+                shapeRenderer.rect(d.x, d.y, d.width, d.height);
+            }
+            
+            shapeRenderer.end();
+        }
 
-        // shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
-
-        // shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-        // shapeRenderer.setColor(0, 1, 0, 1);
-
-        // Rectangle b = player.getBounds();
-        // shapeRenderer.rect(b.x, b.y, b.width, b.height);
-
-
-        // for (Torre torre : torres) {
-        //     Rectangle c = torre.getBounds();
-        //     shapeRenderer.rect(c.x, c.y, c.width, c.height);
-        //     Rectangle d = torre.torre2.getBounds();
-        //     shapeRenderer.rect(d.x, d.y, d.width, d.height);
-        // }
-        
-        // shapeRenderer.end();
         
 
     }
@@ -204,7 +213,6 @@ public class GameScreen implements Screen {
         arvoresTexture.dispose();
         nuvensTexture.dispose();
         montanhaTexture.dispose();
-        music.dispose();
         font.dispose(); 
         uiStage.dispose(); 
     }
