@@ -4,25 +4,29 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-public class MenuScreen implements Screen {
+public class ConfigScreen implements Screen {
 
     private Main game;
     FitViewport UIViewport;
     FitViewport gameViewport;
     private Stage uiStage;
-    Table botoes;
+    Table configTable;
     Table tituloTable;
     BitmapFont font;
     Label titulo;
 
 
-    public MenuScreen(Main game) {
+    public ConfigScreen(Main game) {
         this.game = game;
         this.UIViewport = game.UIViewport;
         this.gameViewport = game.gameViewport;
@@ -51,20 +55,20 @@ public class MenuScreen implements Screen {
 
         tituloTable = new Table();
         uiStage = new Stage(UIViewport, game.batch);
-        botoes = new Table();
-        uiStage.addActor(botoes);
+        configTable = new Table();
+        uiStage.addActor(configTable);
         uiStage.addActor(tituloTable);
 
         font = game.manager.get("fonte.fnt", BitmapFont.class);
 
         tituloTable.setFillParent(true);
-        tituloTable.top().padTop(100);
+        tituloTable.top().padTop(50);
 
-        //botoes.setDebug(true);
+        //configTable.setDebug(true);
         // tituloTable.setDebug(true);
 
-        botoes.setFillParent(true);
-        botoes.padTop(150); 
+        configTable.setFillParent(true);
+        configTable.padTop(150); 
 
         Gdx.input.setInputProcessor(uiStage);
 
@@ -72,24 +76,40 @@ public class MenuScreen implements Screen {
         Label.LabelStyle style = new Label.LabelStyle();
         style.font = font;
         style.fontColor = Color.valueOf("383837");
-        float escala = 0.75f;
+        float escala = 0.4f;
         font.getData().setScale(escala);
 
-        titulo = new Label("Flappy Bird", style);
+        titulo = new Label("Configurações", style);
         titulo.setAlignment(Align.center);
+
+        Skin skin = new Skin(Gdx.files.internal("UISkin/uiskin.json"));
         
-        Botao botao_play = new Botao(game, "botao_play.png", "botao_play_pressionado.png", () -> Play());
-        Botao botao_sair = new Botao(game, "botao_sair.png", "botao_sair_pressionado.png", () -> Gdx.app.exit());
-        Botao botao_config = new Botao(game, "botao_config.png", "botao_config_pressionado.png", () -> game.setScreen(new ConfigScreen(game)));
+        tituloTable.add(titulo);
         
+        Slider volume_slider = new Slider(
+            0f,   // mínimo
+            1f,   // máximo
+            0.01f,// passo
+            false,// horizontal
+            skin
+        );
+
+        Botao botao_voltar = new Botao(game, "botao_config.png", "botao_config_pressionado.png", () -> game.setScreen(new MenuScreen(game)));
+
+        volume_slider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                float valor = volume_slider.getValue();
+                game.TrocarVolume(valor);
+            }
+        });
+
         float largura = 96f;
-        float proporcao = botao_play.getPrefHeight() / botao_play.getPrefWidth();
+        float proporcao = botao_voltar.getPrefHeight() / botao_voltar.getPrefWidth();
         float altura = largura * proporcao;
 
-        tituloTable.add(titulo);
-        botoes.add(botao_play).fill().pad(10).width(largura).height(altura);
-        botoes.add(botao_config).fill().pad(10).width(largura).height(altura);
-        botoes.add(botao_sair).fill().pad(10).width(largura).height(altura);
+        configTable.add(volume_slider).width(300).pad(10).row();
+        configTable.add(botao_voltar).pad(10).width(largura).height(altura);
 
     }
 

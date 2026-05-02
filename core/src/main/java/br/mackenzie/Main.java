@@ -60,6 +60,8 @@ public class Main extends Game {
 
     @Override
     public void render () {
+        // System.out.println(musica_atual.getVolume());
+        // System.out.println(musica_nova);
         if (musica_atual != null && musica_nova != null) {
             
             float dt = Gdx.graphics.getDeltaTime();
@@ -70,6 +72,7 @@ public class Main extends Game {
 
                 if (musica_nova.getVolume() >= volume_geral) {
                     musica_nova.setVolume(volume_geral);
+                    musica_nova = null;
                 }
                 else{
                     musica_nova.setVolume(musica_nova.getVolume()+0.1f);

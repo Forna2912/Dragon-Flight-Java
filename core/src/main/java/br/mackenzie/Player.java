@@ -13,12 +13,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 //Esta classe representa o balde. Ela herda de GameObject e implementa a lógica de movimento do jogador, lendo as entradas do teclado ou toque.
 public class Player extends GameObject {
 
-    private Viewport viewport;
+    Viewport viewport;
     private float velocidadeY = 0f;
     private float gravidade = -20f; 
     private float stateTime = 0f;
     Animation<TextureRegion> animation;
     public float chaoHeight;
+    InputManager inputManager;
     
     
     public Player(Texture texture, float x, float y, float width, float height, Viewport viewport) {
@@ -29,6 +30,8 @@ public class Player extends GameObject {
         super.margemx = width * 0.2f; 
         super.margemy = height * 0.45f;
         bounds = new Rectangle(x+margemx, y+margemy, width-(margemx*2), height-(margemy*2));
+        inputManager = new InputManager(this);
+        inputManager.inputType = () -> inputManager.SeguirMouse();
     }
 
 
@@ -44,9 +47,11 @@ public class Player extends GameObject {
         y += velocidadeY * dt ;
 
         // Pulo
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            pulo();
-        }
+        // if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+        //     pulo();
+        // }
+
+        inputManager.inputType.run();
 
         // Clamp tela
         y = MathUtils.clamp(y, chaoHeight - margemy, worldHeight - margemy- bounds.height);
