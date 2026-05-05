@@ -7,11 +7,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class ConfigScreen implements Screen {
@@ -36,6 +38,7 @@ public class ConfigScreen implements Screen {
     public void render(float dt) {
         
         gameViewport.apply();
+        UIViewport.apply();
         game.batch.setProjectionMatrix(gameViewport.getCamera().combined);
         
         game.background.update(dt);
@@ -46,15 +49,15 @@ public class ConfigScreen implements Screen {
         game.chao.draw();
         game.batch.end();
 
-        UIViewport.apply();
         uiStage.act();
 	    uiStage.draw();
+        
     }
     
     @Override public void show() {
 
         tituloTable = new Table();
-        uiStage = new Stage(UIViewport, game.batch);
+        uiStage = new Stage(UIViewport, game.UIbatch);
         configTable = new Table();
         uiStage.addActor(configTable);
         uiStage.addActor(tituloTable);
@@ -83,19 +86,19 @@ public class ConfigScreen implements Screen {
         titulo.setAlignment(Align.center);
 
         Skin skin = new Skin(Gdx.files.internal("UISkin/uiskin.json"));
+        skin.getFont("default-font").getData().setScale(0.2f);
         
         tituloTable.add(titulo);
+
         
         Slider volume_slider = new Slider(
             0f,   // mínimo
-            1f,   // máximo
+            0.5f,   // máximo
             0.01f,// passo
             false,// horizontal
             skin
         );
-
-        Botao botao_voltar = new Botao(game, "botao_config.png", "botao_config_pressionado.png", () -> game.setScreen(new MenuScreen(game)));
-
+        volume_slider.setValue(game.volume_geral);
         volume_slider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -104,10 +107,28 @@ public class ConfigScreen implements Screen {
             }
         });
 
+
+        SelectBox<inputOption> selectBox = new SelectBox<>(skin);
+        selectBox.setItems(
+            new inputOption("Pulo", () -> game.inputManager.Pulo()),
+            new inputOption("Pedaleira", () -> game.inputManager.Pedaleira()),
+            new inputOption("Seguir mouse", () -> game.inputManager.SeguirMouse())
+        );
+        selectBox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                game.inputManager.inputType = selectBox.getSelected().acao;
+            }
+        });
+
+
+        Botao botao_voltar = new Botao(game, "botao_voltar.png", "botao_voltar_pressionado.png", () -> game.setScreen(new MenuScreen(game)));
+
         float largura = 96f;
         float proporcao = botao_voltar.getPrefHeight() / botao_voltar.getPrefWidth();
         float altura = largura * proporcao;
 
+        configTable.add(selectBox).width(250).pad(10).row();
         configTable.add(volume_slider).width(300).pad(10).row();
         configTable.add(botao_voltar).pad(10).width(largura).height(altura);
 

@@ -50,7 +50,7 @@ public class MenuScreen implements Screen {
     @Override public void show() {
 
         tituloTable = new Table();
-        uiStage = new Stage(UIViewport, game.batch);
+        uiStage = new Stage(UIViewport, game.UIbatch);
         botoes = new Table();
         uiStage.addActor(botoes);
         uiStage.addActor(tituloTable);

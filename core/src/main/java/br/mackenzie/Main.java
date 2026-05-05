@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class Main extends Game {
 
     public SpriteBatch batch;
+    public SpriteBatch UIbatch;
     FitViewport gameViewport;
     FitViewport UIViewport;
     Background background;
@@ -25,7 +26,8 @@ public class Main extends Game {
     Music musica_nova;
     float contador = 0;
     float volume_atual;
-    float volume_geral = 0.3f;
+    float volume_geral = 0.1f;
+    InputManager inputManager;
 
     @Override
     public void create() {
@@ -35,6 +37,8 @@ public class Main extends Game {
         manager.load("botao_play_pressionado.png", Texture.class);
         manager.load("botao_config.png", Texture.class);
         manager.load("botao_config_pressionado.png", Texture.class);
+        manager.load("botao_voltar.png", Texture.class);
+        manager.load("botao_voltar_pressionado.png", Texture.class);
         manager.load("botao_sair.png", Texture.class);
         manager.load("botao_sair_pressionado.png", Texture.class);
         manager.load("fonte.fnt", BitmapFont.class);
@@ -54,32 +58,36 @@ public class Main extends Game {
         this.UIViewport = new FitViewport(800, 500);
         this.background = new Background(this);
         this.chao = new Chao(this);
+        inputManager = new InputManager();
         batch = new SpriteBatch();
+        UIbatch = new SpriteBatch();
         setScreen(new MenuScreen(this));
     }
 
     @Override
     public void render () {
-        // System.out.println(musica_atual.getVolume());
-        // System.out.println(musica_nova);
         if (musica_atual != null && musica_nova != null) {
             
             float dt = Gdx.graphics.getDeltaTime();
             contador+=dt;
+
+            float variacao_volume = volume_geral/10; // A quantidade de volume que será alterada a cada passo
             
-            if (contador >= 0.1f) {
-                volume_atual -= 0.01f;
+            if (contador >= 0.3f) {
+                volume_atual -= variacao_volume;
 
                 if (musica_nova.getVolume() >= volume_geral) {
                     musica_nova.setVolume(volume_geral);
-                    musica_nova = null;
                 }
                 else{
-                    musica_nova.setVolume(musica_nova.getVolume()+0.1f);
+                    musica_nova.setVolume(musica_nova.getVolume()+variacao_volume);
                 }
                 if (volume_atual < 0) {
-                    musica_atual.setVolume(0);
+                    volume_atual = 0;
+                    musica_atual.setVolume(volume_atual);
                     musica_atual.stop();
+                    musica_atual = musica_nova;
+                    musica_nova = null;
                 }
                 else{
                     musica_atual.setVolume(volume_atual);
@@ -87,6 +95,7 @@ public class Main extends Game {
                 contador = 0;
             }
         }
+
         super.render();
         
     }

@@ -17,7 +17,6 @@ public class Background {
     }
 
     float bgOffset1;
-    float bgOffset2;
     float bgOffset3;
     float bgOffset4;
 
@@ -34,13 +33,11 @@ public class Background {
 
     public void update(float dt){
 
-        bgOffset1 += 0.5f * dt; //arvores
-
-        bgOffset3 += 0.2f * dt; //nuvens
-        bgOffset4 += 0.3f * dt; //montanhas
+        bgOffset1 += 0.4f * dt; //arvores
+        bgOffset3 += 0.1f * dt; //nuvens
+        bgOffset4 += 0.2f * dt; //montanhas
         
         if (bgOffset1 > w) bgOffset1 = 0; //arvores
-        if (bgOffset2 > w) bgOffset2 = 0; //chao
         if (bgOffset3 > w) bgOffset3 = 0; //nuvens
         if (bgOffset4 > w) bgOffset4 = 0; //montanhas
 

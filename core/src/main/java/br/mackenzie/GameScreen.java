@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 
 
@@ -37,6 +38,7 @@ public class GameScreen implements Screen {
     Texture ceuTexture;
 
     Table InfoTable;
+    Table botaoTable;
 
     private int score;
     private float gameTime;
@@ -61,7 +63,7 @@ public class GameScreen implements Screen {
 
         torreTexture = new Texture("torre.png");
 
-        player = new Player(playerTexture, 1f, 3f, 1, 1, viewport);
+        player = new Player(game, playerTexture, 1f, 3f, 1, 1, viewport);
         player.chaoHeight = game.chao.chaoTexture.getHeight() / 600f;
         shapeRenderer = new ShapeRenderer();
         torres = new Array<>();
@@ -69,7 +71,8 @@ public class GameScreen implements Screen {
         score = 0;
         gameTime = 0;
         spawnTime = 0;
-        uiStage = new Stage(UIViewport);
+        uiStage = new Stage(UIViewport, game.UIbatch);
+        Gdx.input.setInputProcessor(uiStage);
         font = game.manager.get("fonte.fnt", BitmapFont.class);
         float escala = 0.3f;
         font.getData().setScale(escala);
@@ -77,21 +80,28 @@ public class GameScreen implements Screen {
 
         InfoTable = new Table();
         InfoTable.setFillParent(true);
-        InfoTable.top().padTop(10).padLeft(10).left();
-        
+        InfoTable.top().pad(10).left();
+
+        botaoTable = new Table();
+        botaoTable.setFillParent(true);
+        botaoTable.top().pad(10).right();
+
         scoreLabel = new Label("Score: " + score, style);
         timeLabel = new Label("Time: 0", style);
 
-        //InfoTable.setDebug(true);
+        Botao botao_voltar = new Botao(game, "botao_voltar.png", "botao_voltar_pressionado.png", () -> Voltar());
+
+        // botaoTable.setDebug(true);
+        // InfoTable.setDebug(true);
         
         uiStage.addActor(InfoTable);
+        uiStage.addActor(botaoTable);
 
-        InfoTable.add(scoreLabel).left().row();
-        InfoTable.add(timeLabel).left();
-
-        //System.out.println("oi");
+        botaoTable.add(botao_voltar).right();
         
-        // Prepare your application here.
+        InfoTable.add(scoreLabel).left().row();;
+        InfoTable.add(timeLabel).left();
+    
     }
 
     @Override
@@ -186,6 +196,11 @@ public class GameScreen implements Screen {
 
         
 
+    }
+
+    void Voltar() {
+        game.setScreen(new MenuScreen(game));
+        game.TrocarMusica(game.music_menu);
     }
 
 

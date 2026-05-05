@@ -14,54 +14,40 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class Player extends GameObject {
 
     Viewport viewport;
-    private float velocidadeY = 0f;
-    private float gravidade = -20f; 
+    public float velocidadeY = 0f;
+    public float gravidade = -20f; 
     private float stateTime = 0f;
     Animation<TextureRegion> animation;
     public float chaoHeight;
-    InputManager inputManager;
+    public float dt;
+    Main game;
     
     
-    public Player(Texture texture, float x, float y, float width, float height, Viewport viewport) {
+    public Player(Main game, Texture texture, float x, float y, float width, float height, Viewport viewport) {
         super(texture, x, y, width, height);
+        this.game = game;
         this.viewport = viewport;
         TextureRegion[] frames = TextureRegion.split(texture, 288, 300)[0];
         animation = new Animation<>(0.1f, frames);
         super.margemx = width * 0.2f; 
         super.margemy = height * 0.45f;
         bounds = new Rectangle(x+margemx, y+margemy, width-(margemx*2), height-(margemy*2));
-        inputManager = new InputManager(this);
-        inputManager.inputType = () -> inputManager.SeguirMouse();
+        game.inputManager.player = this;
     }
 
 
     @Override
     public void update(float dt) {
+        this.dt = dt;
         float worldHeight = viewport.getWorldHeight();
-        // Aplica gravidade (aceleração)
-        velocidadeY += gravidade * dt; 
         stateTime += dt;
 
-        // Move o player
-        //sprite.setY(sprite.getY() - velocidadeY * dt);
-        y += velocidadeY * dt ;
+        game.inputManager.inputType.run();
 
-        // Pulo
-        // if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-        //     pulo();
-        // }
-
-        inputManager.inputType.run();
-
-        // Clamp tela
         y = MathUtils.clamp(y, chaoHeight - margemy, worldHeight - margemy- bounds.height);
-
+        velocidadeY = MathUtils.clamp(velocidadeY, -6, 6);
 
         super.currentFrame = animation.getKeyFrame(stateTime, true);
-    }
-
-    public void pulo() {
-        this.velocidadeY = 6f;
     }
 
     public void draw(SpriteBatch batch) {
