@@ -90,7 +90,7 @@ public class ConfigScreen implements Screen {
         
         tituloTable.add(titulo);
 
-        
+        Label volume_textLabel = new Label("Volume", style);
         Slider volume_slider = new Slider(
             0f,   // mínimo
             0.5f,   // máximo
@@ -106,8 +106,8 @@ public class ConfigScreen implements Screen {
                 game.TrocarVolume(valor);
             }
         });
-
-
+        
+        Label input_textLabel = new Label("Tipo de Comando", style);
         SelectBox<inputOption> selectBox = new SelectBox<>(skin);
         selectBox.setItems(
             new inputOption("Pulo", () -> game.inputManager.Pulo()),
@@ -120,17 +120,19 @@ public class ConfigScreen implements Screen {
                 game.inputManager.inputType = selectBox.getSelected().acao;
             }
         });
-
-
+        
+        
         Botao botao_voltar = new Botao(game, "botao_voltar.png", "botao_voltar_pressionado.png", () -> game.setScreen(new MenuScreen(game)));
-
+        
         float largura = 96f;
         float proporcao = botao_voltar.getPrefHeight() / botao_voltar.getPrefWidth();
         float altura = largura * proporcao;
-
-        configTable.add(selectBox).width(250).pad(10).row();
+        
+        configTable.add(input_textLabel);
+        configTable.add(volume_textLabel).row();
+        configTable.add(selectBox).width(250).pad(10);
         configTable.add(volume_slider).width(300).pad(10).row();
-        configTable.add(botao_voltar).pad(10).width(largura).height(altura);
+        configTable.add(botao_voltar).pad(10).width(largura).height(altura).colspan(2);
 
     }
 
