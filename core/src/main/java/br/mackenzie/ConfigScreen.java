@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class ConfigScreen implements Screen {
@@ -76,13 +75,17 @@ public class ConfigScreen implements Screen {
         Gdx.input.setInputProcessor(uiStage);
 
 
+        Label.LabelStyle style_titulo = new Label.LabelStyle();
+        style_titulo.font = font;
+        style_titulo.fontColor = Color.valueOf("383837");
+        font.getData().setScale(0.4f);
+
         Label.LabelStyle style = new Label.LabelStyle();
         style.font = font;
         style.fontColor = Color.valueOf("383837");
-        float escala = 0.4f;
-        font.getData().setScale(escala);
+        font.getData().setScale(0.1f);
 
-        titulo = new Label("Configurações", style);
+        titulo = new Label("Configurações", style_titulo);
         titulo.setAlignment(Align.center);
 
         Skin skin = new Skin(Gdx.files.internal("UISkin/uiskin.json"));
