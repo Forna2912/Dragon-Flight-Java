@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 public class InputManager {
 
     Player player;
-    Runnable inputType = () -> Pedaleira();
+    Runnable inputType = () -> Pulo();
     private Vector2 mouse = new Vector2();
 
     void SeguirMouse(){
