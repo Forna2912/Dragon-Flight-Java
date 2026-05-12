@@ -55,7 +55,7 @@ public class MenuScreen implements Screen {
         uiStage.addActor(botoes);
         uiStage.addActor(tituloTable);
 
-        font = game.manager.get("fonte.fnt", BitmapFont.class);
+        font = new BitmapFont(Gdx.files.internal("UISkin/fonte.fnt"));
 
         tituloTable.setFillParent(true);
         tituloTable.top().padTop(100);

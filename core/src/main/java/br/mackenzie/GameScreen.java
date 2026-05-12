@@ -19,20 +19,19 @@ import com.badlogic.gdx.Screen;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class GameScreen implements Screen {
     
-    public GameScreen(Main game) {
-        this.game = game;
-        this.viewport = game.gameViewport;
-        this.UIViewport = game.UIViewport;
+    public GameScreen(Main main) {
+        this.main = main;
+        this.viewport = main.gameViewport;
+        this.UIViewport = main.UIViewport;
     }
 
-    private Main game;
+    private Main main;
     FitViewport viewport;
     FitViewport UIViewport;
     Player player;
     
     Texture playerTexture;
     Texture arvoresTexture;
-    Texture torreTexture;
     Texture nuvensTexture;
     Texture montanhaTexture;
     Texture ceuTexture;
@@ -40,10 +39,9 @@ public class GameScreen implements Screen {
     Table InfoTable;
     Table botaoTable;
 
+    TorreManager spawnTorre;
     private int score;
     private float gameTime;
-    Array<Torre> torres;
-    private float spawnTime;
     
     // NOVIDADE: Elementos de UI
     private Stage uiStage;
@@ -61,19 +59,18 @@ public class GameScreen implements Screen {
 
         playerTexture = new Texture("passaro.png");
 
-        torreTexture = new Texture("torre.png");
-
-        player = new Player(game, playerTexture, 1f, 3f, 1, 1, viewport);
-        player.chaoHeight = game.chao.chaoTexture.getHeight() / 600f;
+        
+        player = new Player(main, playerTexture, 1f, 3f, 1, 1, viewport);
+        player.chaoHeight = main.chao.chaoTexture.getHeight() / 600f;
         shapeRenderer = new ShapeRenderer();
-        torres = new Array<>();
+        
+        spawnTorre = new TorreManager(main, player);
 
         score = 0;
         gameTime = 0;
-        spawnTime = 0;
-        uiStage = new Stage(UIViewport, game.UIbatch);
+        uiStage = new Stage(UIViewport, main.UIbatch);
         Gdx.input.setInputProcessor(uiStage);
-        font = game.manager.get("fonte.fnt", BitmapFont.class);
+        font = new BitmapFont(Gdx.files.internal("UISkin/fonte.fnt"));
         float escala = 0.3f;
         font.getData().setScale(escala);
         Label.LabelStyle style = new Label.LabelStyle(font, Color.valueOf("383837"));
@@ -89,7 +86,7 @@ public class GameScreen implements Screen {
         scoreLabel = new Label("Score: " + score, style);
         timeLabel = new Label("Time: 0", style);
 
-        Botao botao_voltar = new Botao(game, "botao_voltar.png", "botao_voltar_pressionado.png", () -> Voltar());
+        Botao botao_voltar = new Botao(main, "botao_voltar.png", "botao_voltar_pressionado.png", () -> Voltar());
 
         // botaoTable.setDebug(true);
         // InfoTable.setDebug(true);
@@ -115,39 +112,32 @@ public class GameScreen implements Screen {
     public void render(float dt) {
         // Draw your application here.
         gameTime += dt;
-        spawnTime += dt;
-        
-        if (spawnTime > 2f) {
-            torres.add(new Torre(torreTexture, viewport.getWorldWidth(),Math.round(MathUtils.random(-2f, 0f) * 100f) / 100f , (float)torreTexture.getWidth()/350, (float)torreTexture.getHeight()/350, viewport));
-            spawnTime = 0;
-        }
         
         updateGameObjects(dt);
         handleCollisions();
         drawGameObjects();
         drawUI();
     }
+    
     private void updateGameObjects(float dt) {
-        game.background.update(dt);
-        game.chao.update(dt);
+        main.background.update(dt);
+        main.chao.update(dt);
         player.update(dt);
-        for (Torre torre : torres) {
-            torre.update(dt);
-        }
+        spawnTorre.update(dt);
     }
 
     private void handleCollisions() {
-        for (Torre torre : torres) {
+        for (Torre torre : spawnTorre.torres) {
             if ((player.getBounds().overlaps(torre.getBounds()) || player.getBounds().overlaps(torre.torre2.getBounds())) && !torre.passed) {
                 if (player.vida <= 0) {
                     System.out.println("Game Over!");
-                    torre.passed = true;
+                    torre.passed();
                 }
             }
             else if (torre.x+torre.width/2 < player.x+player.width/2 && !torre.passed) {
                 score++;
                 scoreLabel.setText("Score: " + score);
-                torre.passed = true;
+                torre.passed();
             }
         }
     }
@@ -156,21 +146,16 @@ public class GameScreen implements Screen {
         ScreenUtils.clear(Color.BLACK);
         UIViewport.apply();
         viewport.apply();
-        game.batch.setProjectionMatrix(viewport.getCamera().combined);
+        main.batch.setProjectionMatrix(viewport.getCamera().combined);
 
-        game.batch.begin();
+        main.batch.begin();
 
-        game.background.draw();
-
-        for (Torre torre : torres) {
-            torre.draw(game.batch);
-        }
+        main.background.draw();
+        spawnTorre.draw();
+        main.chao.draw();
+        player.draw(main.batch);
         
-        game.chao.draw();
-
-        player.draw(game.batch);
-        
-        game.batch.end();
+        main.batch.end();
 
 
 
@@ -184,7 +169,7 @@ public class GameScreen implements Screen {
             shapeRenderer.rect(b.x, b.y, b.width, b.height);
     
     
-            for (Torre torre : torres) {
+            for (Torre torre : spawnTorre.torres) {
                 Rectangle c = torre.getBounds();
                 shapeRenderer.rect(c.x, c.y, c.width, c.height);
                 Rectangle d = torre.torre2.getBounds();
@@ -199,8 +184,8 @@ public class GameScreen implements Screen {
     }
 
     void Voltar() {
-        game.setScreen(new MenuScreen(game));
-        game.TrocarMusica(game.music_menu);
+        main.setScreen(new MenuScreen(main));
+        main.TrocarMusica(main.music_menu);
     }
 
 
@@ -222,7 +207,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        game.batch.dispose();
+        main.batch.dispose();
         playerTexture.dispose();
         arvoresTexture.dispose();
         nuvensTexture.dispose();

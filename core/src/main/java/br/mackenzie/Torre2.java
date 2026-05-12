@@ -9,16 +9,18 @@ import com.badlogic.gdx.math.Rectangle;
 public class Torre2 extends GameObject {
 
     private float velocidadeX = 2f;
+    public int direcao;
 
-    public Torre2(Texture texture, float x, float y, float width, float height, Viewport viewport) {
+    public Torre2(Texture texture, float x, float y, float width, float height, Viewport viewport, int irParaDireita) {
         super(texture, x, y, width, height);
         bounds = new Rectangle(x+margemx, y+margemy, width-(margemy*2), height-(margemx*2));
+        direcao = irParaDireita;
     }
 
 
     @Override
     public void update(float dt) {
-        x -= velocidadeX * dt ;
+        x += velocidadeX * dt * direcao;
     }
 
 

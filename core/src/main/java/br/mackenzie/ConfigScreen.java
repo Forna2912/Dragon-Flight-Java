@@ -4,6 +4,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -24,6 +25,7 @@ public class ConfigScreen implements Screen {
     Table configTable;
     Table tituloTable;
     BitmapFont font;
+    BitmapFont font_titulo;
     Label titulo;
 
 
@@ -61,7 +63,8 @@ public class ConfigScreen implements Screen {
         uiStage.addActor(configTable);
         uiStage.addActor(tituloTable);
 
-        font = game.manager.get("fonte.fnt", BitmapFont.class);
+        font = new BitmapFont(Gdx.files.internal("UISkin/fonte.fnt"));
+        font_titulo = new BitmapFont(Gdx.files.internal("UISkin/fonte.fnt"));
 
         tituloTable.setFillParent(true);
         tituloTable.top().padTop(50);
@@ -74,21 +77,20 @@ public class ConfigScreen implements Screen {
 
         Gdx.input.setInputProcessor(uiStage);
 
-
         Label.LabelStyle style_titulo = new Label.LabelStyle();
-        style_titulo.font = font;
+        style_titulo.font = font_titulo;
         style_titulo.fontColor = Color.valueOf("383837");
-        font.getData().setScale(0.4f);
+        font_titulo.getData().setScale(0.4f);
 
         Label.LabelStyle style = new Label.LabelStyle();
         style.font = font;
         style.fontColor = Color.valueOf("383837");
-        font.getData().setScale(0.1f);
-
+        font.getData().setScale(0.25f);
+        
         titulo = new Label("Configurações", style_titulo);
         titulo.setAlignment(Align.center);
 
-        Skin skin = new Skin(Gdx.files.internal("UISkin/uiskin.json"));
+        Skin skin = new Skin(Gdx.files.internal("UISkin/uiskin.json"), new TextureAtlas("UISkin/uiskin.atlas"));
         skin.getFont("default-font").getData().setScale(0.2f);
         
         tituloTable.add(titulo);
@@ -101,6 +103,7 @@ public class ConfigScreen implements Screen {
             false,// horizontal
             skin
         );
+
         volume_slider.setValue(game.volume_geral);
         volume_slider.addListener(new ChangeListener() {
             @Override

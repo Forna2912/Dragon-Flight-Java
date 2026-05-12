@@ -19,6 +19,7 @@ public class Player extends GameObject {
     public float chaoHeight;
     public float dt;
     Main game;
+    boolean olhandoDireita = true;
     
     
     public Player(Main game, Texture texture, float x, float y, float width, float height, Viewport viewport) {
@@ -49,6 +50,10 @@ public class Player extends GameObject {
     }
 
     public void draw(SpriteBatch batch) {
-        batch.draw(currentFrame, x, y, width, height);
+        if (olhandoDireita){
+            batch.draw(currentFrame, x, y, width, height);
+        }else{
+            batch.draw(currentFrame, x + width, y, -width, height);
+        }
     }
 } 

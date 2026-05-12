@@ -26,8 +26,9 @@ public class Main extends Game {
     Music musica_nova;
     float contador = 0;
     float volume_atual;
-    float volume_geral = 0.1f;
+    float volume_geral = 0f;
     InputManager inputManager;
+    public int direcao = -1;
 
     @Override
     public void create() {
@@ -41,7 +42,6 @@ public class Main extends Game {
         manager.load("botao_voltar_pressionado.png", Texture.class);
         manager.load("botao_sair.png", Texture.class);
         manager.load("botao_sair_pressionado.png", Texture.class);
-        manager.load("fonte.fnt", BitmapFont.class);
         manager.load("fase1.mp3", Music.class);
         manager.load("fase2.mp3", Music.class);
         manager.load("menu.mp3", Music.class);
