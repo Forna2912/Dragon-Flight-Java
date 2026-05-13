@@ -121,4 +121,9 @@ public class Main extends Game {
             musica_atual = nova;
         }
     }
+
+    @Override
+    public void dispose(){
+        manager.dispose();
+    }
 }

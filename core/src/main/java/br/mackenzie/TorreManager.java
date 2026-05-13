@@ -37,7 +37,7 @@ public class TorreManager {
         torreTexture = new Texture("torre.png");
         w = viewport.getWorldWidth();
         torres = new Array<>();
-        faseAtual = () -> trocarFase(1);
+        faseAtual = () -> fase1();
         inicio = player.x;
     }
 
@@ -59,7 +59,7 @@ public class TorreManager {
             case 1:
                 tempoDaFase += dt;
                 if (contadorTorre >= 5){
-                    trocarFase( 5);
+                    trocarFase( 2);
                 }
                 break;
 
@@ -67,14 +67,14 @@ public class TorreManager {
                 tempoDaFase += dt;
                 if (tempoDaFase >= 5){
                     proximaFase = () -> fase3();
-                    trocarFase( 3);
+                    trocarFase( 5);
                 }
                 break;
 
             case 3:
                 tempoDaFase += dt;
                 if (contadorTorre >= 10){
-                    trocarFase( 2);
+                    //trocarFase( 2);
                 }
                 break;
         }
